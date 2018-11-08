@@ -50,7 +50,7 @@ public class GrowableList<T> implements P6List<T> {
 	public void addFront(T item) {
 		
 		if (fill > array.length) {
-			Object[] newList = new Object[(2*(this.array.length))]; //Crates an new list and makes it double the length
+			Object[] newList = new Object[(2*(this.array.length))]; //Creates an new list and makes it double the length
 			for (int i=0;i<array.length; i++) {
 				newList[i+1] = this.array[i]; //Also noting that "newList" is an array
 			}
@@ -63,15 +63,31 @@ public class GrowableList<T> implements P6List<T> {
 	@Override
 	public void addBack(T item) {
 		// I've implemented part of this for you.
-		if (fill >= this.array.length) { 
-			throw new P6NotImplemented();
+		if (fill >= this.array.length) {
+			Object[] newArray = new Object[(2*(this.array.length))]; //Creates an new list and makes it double the length
+			for (int i=0;i<array.length; i++) {
+				newArray[i] = this.array[i];
+			}
+			array = newArray;	
 		}
 		this.array[fill++] = item;
 	}
 
 	@Override
 	public void addIndex(T item, int index) {
-		throw new P6NotImplemented();
+		//I know we don't have to Really do this but we should check if it's full before we add things
+		if (fill >= this.array.length) {
+			Object[] newArray = new Object[(2*(this.array.length))]; //Creates an new list and makes it double the length
+			for (int i=0;i<array.length; i++) { //
+				newArray[i] = this.array[i];
+			}
+			array = newArray;	
+		}
+		for (int j=fill; j>index; j--) {
+			array[j] = array[j-1];
+		}
+		array[index] = item;
+		fill++;
 	}
 	
 	@Override
