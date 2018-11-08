@@ -1,5 +1,6 @@
 package edu.smith.cs.csc212.p6;
 
+import edu.smith.cs.csc212.p6.errors.EmptyListError;
 import edu.smith.cs.csc212.p6.errors.P6NotImplemented;
 
 public class GrowableList<T> implements P6List<T> {
@@ -14,22 +15,49 @@ public class GrowableList<T> implements P6List<T> {
 
 	@Override
 	public T removeFront() {
-		throw new P6NotImplemented();
+		if (this.size() == 0) {
+			throw new EmptyListError();
+		}
+		T removed = this.getIndex(0);
+		fill--; // fill is the size of the list
+		for (int i=0; i<fill; i++) {
+			this.array[i] = this.array[i+1];
+		}
+		this.array[fill] = null;
+		return removed;
 	}
 
 	@Override
 	public T removeBack() {
-		throw new P6NotImplemented();
+		return removeIndex(fill-1); // B/c It wants anode back and not a void
 	}
 
 	@Override
 	public T removeIndex(int index) {
-		throw new P6NotImplemented();
+		if (this.size() == 0) {
+			throw new EmptyListError();
+		}
+		T removed = this.getIndex(index);
+		fill--; // fill is the size of the list
+		for (int i=index; i<fill; i++) {
+			this.array[i] = this.array[i+1];
+		}
+		this.array[fill] = null;
+		return removed;
 	}
 
 	@Override
 	public void addFront(T item) {
-		throw new P6NotImplemented();
+		
+		if (fill > array.length) {
+			Object[] newList = new Object[(2*(this.array.length))]; //Crates an new list and makes it double the length
+			for (int i=0;i<array.length; i++) {
+				newList[i+1] = this.array[i]; //Also noting that "newList" is an array
+			}
+			array = newList;
+		}
+		array[0] = item;
+		 
 	}
 
 	@Override
