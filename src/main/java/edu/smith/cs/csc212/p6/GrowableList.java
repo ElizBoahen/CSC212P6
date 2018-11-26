@@ -48,15 +48,7 @@ public class GrowableList<T> implements P6List<T> {
 
 	@Override
 	public void addFront(T item) {
-		
-		if (fill > array.length) {
-			Object[] newList = new Object[(2*(this.array.length))]; //Creates an new list and makes it double the length
-			for (int i=0;i<array.length; i++) {
-				newList[i+1] = this.array[i]; //Also noting that "newList" is an array
-			}
-			array = newList;
-		}
-		array[0] = item;
+		addIndex(item,0);
 		 
 	}
 
@@ -74,14 +66,14 @@ public class GrowableList<T> implements P6List<T> {
 	}
 
 	@Override
-	public void addIndex(T item, int index) {
+	public void addIndex(T item, int index) { // This is fine, it's just red because our starting list was really big
 		//I know we don't have to Really do this but we should check if it's full before we add things
 		if (fill >= this.array.length) {
 			Object[] newArray = new Object[(2*(this.array.length))]; //Creates an new list and makes it double the length
 			for (int i=0;i<array.length; i++) { //
 				newArray[i] = this.array[i];
 			}
-			array = newArray;	
+			this.array = newArray;	
 		}
 		for (int j=fill; j>index; j--) {
 			array[j] = array[j-1];

@@ -2,6 +2,7 @@ package edu.smith.cs.csc212.p6;
 
 import java.util.Iterator;
 
+import edu.smith.cs.csc212.p6.errors.BadIndexError;
 import edu.smith.cs.csc212.p6.errors.EmptyListError;
 import edu.smith.cs.csc212.p6.errors.P6NotImplemented;
 
@@ -21,7 +22,24 @@ public class SinglyLinkedList<T> implements P6List<T>, Iterable<T> {
 
 	@Override
 	public T removeBack() {
-		throw new P6NotImplemented();
+		Node<T> current = start;
+		if (start == null) {
+			return null;
+		} 
+		// if there is only one item
+		while (current != null) {
+			if (current.next == null) {
+				T last = current.value;
+				current = null;
+				return last;
+			} else if (current.next.next == null) {
+				T last = current.next.value;
+				current.next = null;
+				return last;
+			}
+			current = current.next;
+		}
+		throw new EmptyListError();
 	}
 
 	@Override
@@ -30,18 +48,46 @@ public class SinglyLinkedList<T> implements P6List<T>, Iterable<T> {
 	}
 
 	@Override
-	public void addFront(T item) {
-		this.start = new Node<T>(item, start);
+	public void addFront(T item) { // Hey BTW: "this.whatever" is just to note that Java should use a specific version
+		if (start == null) {
+			start = new Node<T>(item, null);
+		}
+		else {
+			start = new Node<T>(item, start); //B/c the start on the right hang side of the equals is the old start value
+		}
+		
 	}
 
 	@Override
 	public void addBack(T item) {
-		throw new P6NotImplemented();
+		//if there are no nodes in list
+		if (start == null) {
+			this.start = new Node<T>(item, start);
+		}
+		//if there is one node
+		else {
+			Node<T> last = start;
+			while (last.next != null) {
+				last = last.next;
+			}
+			last.next = new Node<T>(item, null);
+		}
+		
 	}
 
 	@Override
 	public void addIndex(T item, int index) {
 		throw new P6NotImplemented();
+//		Node<T> last = null;
+//		for (Node<T> current = start; current != null; current = current.next) {
+//			last = current;
+//		}
+//		if (last != null) {
+//			last.next = new Node<>(last.value, null);
+//		} else {
+//			start = new Node<>(last.value, null);
+//		}
+//		return true;
 	}
 
 	@Override
@@ -51,12 +97,19 @@ public class SinglyLinkedList<T> implements P6List<T>, Iterable<T> {
 
 	@Override
 	public T getBack() {
-		throw new P6NotImplemented();
+		return getIndex(size()-1); // because size starts counting from 1 so if we want the last index . . . 
 	}
 
 	@Override
-	public T getIndex(int index) {
-		throw new P6NotImplemented();
+	public T getIndex(int index) { // we need a counter variable because we want the value and the code will just increment
+		int counter = 0;
+		for (Node<T> now = this.start; now != null; now = now.next) {
+			if (index == counter) {
+				return now.value;
+			}
+			counter++;
+		}
+		throw new BadIndexError(); // if we get a bad / non existing index, yell	
 	}
 
 	@Override
@@ -70,7 +123,12 @@ public class SinglyLinkedList<T> implements P6List<T>, Iterable<T> {
 
 	@Override
 	public boolean isEmpty() {
-		throw new P6NotImplemented();
+		if (start == null) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	/**
@@ -91,10 +149,14 @@ public class SinglyLinkedList<T> implements P6List<T>, Iterable<T> {
 	private static class Node<T> {
 		/**
 		 * What node comes after me?
+		 *    |  (Arrows makes it clearer)
+		 *   \/
 		 */
 		public Node<T> next;
 		/**
 		 * What value is stored in this node?
+		 *    |  (Arrows makes it clearer)
+		 *   \/
 		 */
 		public T value;
 
