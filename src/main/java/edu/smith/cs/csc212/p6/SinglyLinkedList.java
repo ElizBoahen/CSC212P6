@@ -1,5 +1,5 @@
 package edu.smith.cs.csc212.p6;
-
+// Future Note: IF IT'S GREEN THAT DOESN'T MEAN IT'S PASSED IT JUST MEANS THAT IT'S RUN SO DON'T OVERLOOK GREEN CODE, OKAY?
 import java.util.Iterator;
 
 import edu.smith.cs.csc212.p6.errors.BadIndexError;
@@ -23,39 +23,57 @@ public class SinglyLinkedList<T> implements P6List<T>, Iterable<T> {
 	@Override
 	public T removeBack() {
 		Node<T> current = start;
-		if (start == null) {
-			return null;
-		} 
+		checkNotEmpty();
 		// if there is only one item
-		while (current != null) {
-			if (current.next == null) {
-				T last = current.value;
-				current = null;
-				return last;
-			} else if (current.next.next == null) {
+		if (start.next == null) {
+			T last = start.value;
+			start = null; // Not start.next bc start.next IS A NODE so make start = to null and it'll forget start.next
+			return last;
+		}
+		while (current.next != null) {
+			if (current.next.next == null) {
 				T last = current.next.value;
 				current.next = null;
 				return last;
+			} else {
+				current = current.next;
 			}
-			current = current.next;
 		}
 		throw new EmptyListError();
 	}
 
 	@Override
 	public T removeIndex(int index) {
-		throw new P6NotImplemented();
+//		throw new P6NotImplemented();
+		checkNotEmpty();
+		if (index == 0) {
+			return removeFront();
+		}
+		if (index == size()-1) {
+			return removeBack();
+		}
+		else {
+			Node<T> behind = start;
+			for (int i = 0; i < index-1; i++) {
+				behind = behind.next;
+			}
+			Node <T> trash = behind.next; // Creates anew node that points at the node being removed
+			behind.next = behind.next.next; // Skip over the node we're deleting
+			trash.next = null; // Makes the node we're deleting point to nothings
+			return trash.value;
+		}
+		
 	}
 
 	@Override
 	public void addFront(T item) { // Hey BTW: "this.whatever" is just to note that Java should use a specific version
 		if (start == null) {
 			start = new Node<T>(item, null);
+			
 		}
 		else {
-			start = new Node<T>(item, start); //B/c the start on the right hang side of the equals is the old start value
+			start = new Node<T>(item, start); //B/c the start on the right hand side of the equals is the old start value
 		}
-		
 	}
 
 	@Override
@@ -77,26 +95,37 @@ public class SinglyLinkedList<T> implements P6List<T>, Iterable<T> {
 
 	@Override
 	public void addIndex(T item, int index) {
-		throw new P6NotImplemented();
-//		Node<T> last = null;
-//		for (Node<T> current = start; current != null; current = current.next) {
-//			last = current;
-//		}
-//		if (last != null) {
-//			last.next = new Node<>(last.value, null);
-//		} else {
-//			start = new Node<>(last.value, null);
-//		}
-//		return true;
+//		throw new P6NotImplemented();
+		if (index == 0) {
+			addFront(item);
+		}
+		else if (index < 0) {
+			throw new BadIndexError();
+		}
+		else if (index == size()) { //We have elseif's because
+			addBack(item);
+		}
+		else if (index > size()) {
+			throw new BadIndexError();
+		}
+		else {
+			Node<T> behind = start;
+			for (int i = 0; i < index-1; i++) {
+				behind = behind.next;
+			}
+			behind.next = new Node<T>(item, behind.next);
+		}
 	}
 
 	@Override
 	public T getFront() {
+		checkNotEmpty();
 		return start.value;
 	}
 
 	@Override
 	public T getBack() {
+		checkNotEmpty();
 		return getIndex(size()-1); // because size starts counting from 1 so if we want the last index . . . 
 	}
 
