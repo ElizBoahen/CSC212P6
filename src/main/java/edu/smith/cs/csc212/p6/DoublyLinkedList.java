@@ -2,6 +2,7 @@ package edu.smith.cs.csc212.p6;
 
 import edu.smith.cs.csc212.p6.errors.EmptyListError;
 import edu.smith.cs.csc212.p6.errors.P6NotImplemented;
+import edu.smith.cs.csc212.p6.errors.BadIndexError;
 
 
 
@@ -21,60 +22,150 @@ public class DoublyLinkedList<T> implements P6List<T> {
 	@Override
 	public T removeFront() {
 		checkNotEmpty();
-		throw new P6NotImplemented();
+		Node<T> removedValue = start;
+		Node<T> afterRemove = start.after;
+		removedValue.before = afterRemove;
+		start = afterRemove;
+		return removedValue.value; 
 	}
 
 	@Override
 	public T removeBack() {
 		checkNotEmpty();
-		throw new P6NotImplemented();
+		System.out.println("inside removeBack");
+		// if there is only one item
+		if (start == end) {
+			Node<T> removedValue = start;
+//			System.out.println ("start == end" + removedValue);
+			start = removedValue.after;
+			
+			return removedValue.value;
+		}
+//		else {
+			Node<T> removedValue = end;
+//			System.out.println ("else" + removedValue);
+			Node<T> beforeRemove = end.before;
+			beforeRemove.after = null;
+			end = beforeRemove;
+			System.out.println("inside elseeeee ");
+			return removedValue.value;
+//		}
 	}
 
 	@Override
 	public T removeIndex(int index) {
 		checkNotEmpty();
-		throw new P6NotImplemented();
+		if (index == 0) {
+			return removeFront();
+		}
+		if (index == size()-1) {
+			return removeBack();
+		}
+		else {
+			Node<T> behind = start;
+			for (int i = 0; i < index-1; i++) {
+				behind = behind.after;
+			}
+			Node <T> trash = behind.after; // Creates anew node that points at the node being removed
+			behind.after = behind.after.after; // Skip over the node we're deleting
+			trash.after = null; // Makes the node we're deleting point to nothings
+			return trash.value;
+		}
 	}
 
 	@Override
 	public void addFront(T item) {
-		throw new P6NotImplemented();
+		if (isEmpty()) {
+			start = new Node<T>(item);
+		}
+		else {
+			Node<T> addingIn = new Node<T>(item);
+			start.before = addingIn;
+			addingIn.after = start;
+			start = addingIn;
+		}
 	}
 
 	@Override
 	public void addBack(T item) {
-		throw new P6NotImplemented();
+		//if there are no nodes in list
+		Node<T> addingIn = new Node<T>(item);
+		if (isEmpty()) {
+			start = addingIn;
+		}
+		//if there is one node
+		else {
+			end.after = addingIn;
+			addingIn.before = end;
+			
+		}
+		end = addingIn;
 	}
 
 	@Override
 	public void addIndex(T item, int index) {
-		throw new P6NotImplemented();
+		if (index == 0) {
+			addFront(item);
+		}
+		else if (index < 0) {
+			throw new BadIndexError();
+		}
+		else if (index == size()) { //We have elseif's because
+			addBack(item);
+		}
+		else if (index > size()) {
+			throw new BadIndexError();
+		}
+		else {
+			Node<T> behind = start;
+			for (int i = 0; i < index-1; i++) {
+				behind = behind.after;
+			}
+			behind.after = new Node<T>(item);
+		}
 	}
 
 	@Override
 	public T getFront() {
-		throw new P6NotImplemented();
+		checkNotEmpty();
+		return start.value;
 	}
 
 	@Override
 	public T getBack() {
-		throw new P6NotImplemented();
+		checkNotEmpty();
+		return end.value;
 	}
 	
 	@Override
 	public T getIndex(int index) {
 		checkNotEmpty();
-		throw new P6NotImplemented();
+		int counter = 0;
+		for (Node<T> now = this.start; now != null; now = now.after) {
+			if (index == counter) {
+				return now.value;
+			}
+			counter++;
+		}
+		throw new BadIndexError(); // if we get a bad / non existing index, yell
 	}
 
 	@Override
 	public int size() {
-		throw new P6NotImplemented();
+		int count = 0;
+		for (Node<T> n = this.start; n != null; n = n.after) {
+			count++;
+		}
+		return count;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		throw new P6NotImplemented();
+		if(start == null && end == null) {
+			return true;
+		}
+		return false;
+
 	}
 	
 	private void checkNotEmpty() {
